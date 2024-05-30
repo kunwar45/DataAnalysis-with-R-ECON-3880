@@ -1,0 +1,94 @@
+---
+title: "ECON 3880: Assignment 1"
+author: "Iman Ullah and Kunwar Nir" 
+
+date: '`r Sys.Date()`'
+output: 
+  html_notebook: 
+    toc: yes
+    toc_float: yes
+    df_print: paged
+    number_sections: true
+---
+Do not change anything above this line except your name, even a single space!
+
+
+# Q1:
+
+Question 1 goes here.
+
+```{r}
+# Write your code here to answer Q1. For example I have added 2 lines of code to this code chunk
+install.packages("ggplot2")
+library(ggplot2)
+df <- read.csv('insurance.csv')
+ggplot(data = df, aes(x = region, fill = sex)) +
+  geom_bar() +
+  labs(title = "Count Plot of Observations by Region and Sex",
+       x = "Region",
+       y = "Count")
+```
+
+Here you will type the answer to the Q1, if need be. 
+
+# Q2:
+
+Question 2 here.
+
+```{r}
+# Your code here
+ggplot(data =df, aes(x = bmi, y = charges, color = smoker)) +
+  geom_point() +
+  geom_smooth( method = lm) + 
+  labs(title = " The link between BMI and Charges: Smokers and nonsmokers.",
+       x = "Body Mass Index",
+       y = "Dollar Charged",
+       color = "Smoker")
+  
+  "Conclusion: there is a positive correlation between BMI and charges for smokers"
+```
+Your answer to Q2 here.
+Conclusion: there is a positive correlation between BMI and charges for smokers
+ 
+# Q3:
+
+Question 3 here.
+
+```{r}
+# Your code here to answer Q3
+ggplot(data = df, aes(x = region, fill = smoker)) +
+  geom_bar(position = "stack") +
+  coord_flip() +
+  theme_minimal() +
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Stacked Bar Chart of Smokers and Non-Smokers by Region",
+       x = "Region",
+       y = "Count",
+       fill = "Smoker")
+```
+
+Your answer to Q3 here.
+
+
+# Q4:
+
+Question 4 here.
+
+```{r}
+# Your code here
+library(plotly)
+plot_ly(data = df, x = ~bmi, y = ~charges, color = ~region, type = 'scatter', mode = 'markers')
+  layout(title = "Interactive Scatter Plot of BMI vs Charges",
+         xaxis = list(title = "BMI"),
+         yaxis = list(title = "Charges"))
+```
+
+Your answer to Q4 here.
+
+
+Also remember that you need to run all the code chunks and then save the file before clicking on Preview. After clicking on Preview, RStudio will save a file in your computer with an extension of *nb.html*; for example, **Assignment1.nb.html**, which you will send it to me.
+
+***Good luck!***
+
+
