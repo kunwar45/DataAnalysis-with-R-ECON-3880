@@ -1,0 +1,108 @@
+---
+title: "ECON 3880: Assignment 1"
+author: "Kunwar Nir, Iman Ullah" 
+
+date: '`r Sys.Date()`'
+output: 
+  html_notebook: 
+    toc: yes
+    toc_float: yes
+    df_print: paged
+    number_sections: true
+---
+Do not change anything above this line except your name, even a single space!
+
+```{r}
+df = read.csv("/Users/kunwar/Downloads/insurance.csv")
+```
+
+# Q1:
+
+Question 1 goes here.
+
+```{r}
+# Write your code here to answer Q1. For example I have added 2 lines of code to this code chunk
+library(ggplot2)
+ggplot(data = df , aes(x = charges)) +
+  geom_histogram(fill = "red", color = "blue") +
+  labs(title = "Histogram of Charges",
+       x = "Charges",
+       y = "Frequency")
+```
+
+Here you will type the answer to the Q1, if need be. 
+
+# Q2:
+
+Question 2 here.
+
+```{r}
+# Your code here
+ggplot(data = df, aes(x = charges, fill = as.factor(smoker))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot of Charges by Smoker Status",
+       x = "Charges",
+       y = "Density") +
+  scale_fill_manual(values = c("red", "blue"), 
+                    name = "Smoker Status", 
+                    labels = c("Non-Smoker", "Smoker"))
+
+```
+
+Your answer to Q2 here.
+
+There is a clear difference between smokers and non-smokers. Non-smokers are charged less than smokers. Smokers have more charges and it seems to be bimodal.
+# Q3:
+
+Question 3 here.
+
+```{r}
+ggplot(data = df, aes(x = charges, fill = smoker)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot of Charges by Smoker Status and Region",
+       x = "Charges",
+       y = "Density") +
+  scale_fill_manual(values = c("red", "blue"), 
+                    name = "Smoker Status", 
+                    labels = c("Non-Smoker", "Smoker")) +
+  facet_wrap(~ region)
+```
+
+Your answer to Q3 here.
+
+In the southeast it seems there are more charges at 40000 for smokers. In the southwest, there are less at the 40000 and more at the 20000. Northeast seems to be be the most balanced for smokers.
+
+Overall, for the non-smokers, the regions seem similar. For smokers, both of the souths have more at the 40000 and the norths have more at 20000. 
+
+# Q4:
+
+Question 4 here.
+
+```{r}
+#installing package
+install.packages("ggthemes")
+library(ggthemes)
+
+
+```
+
+```{r}
+# Your code here
+
+ggplot(data = df, aes(x = smoker, y = charges, fill = smoker)) +
+  geom_boxplot()  +
+  facet_wrap(~ region) +
+  coord_flip() +
+  theme_economist()
+
+```
+
+Your answer to Q4 here.
+
+
+Also remember that you need to run all the code chunks and then save the file before clicking on Preview. After clicking on Preview, RStudio will save a file in your computer with an extension of *nb.html*; for example, **Assignment1.nb.html**, which you will send it to me.
+
+***Good luck!***
+
+
+
