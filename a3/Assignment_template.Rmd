@@ -10,14 +10,14 @@ output:
     df_print: paged
     number_sections: true
 ---
-Do not change anything above this line except your name, even a single space!
+Assignment 3. 
 
 
 # Q1:
 
 Question 1 goes here.
 
-```{r}
+```{r echo=TRUE}
 library(tidyverse)
 syr <- read_rds('SYRflights2021.rds')
 first_three_rows <- head(syr, 3)
@@ -26,14 +26,16 @@ print(first_three_rows)
 
 Here you will type the answer to the Q1, if need be. 
 
+The names of the columns are: year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, arr_delay, carrier, flight, tailnum, origin, dest, air_time, distance, hour, minute, time_hour
+
 # Q2:
 
 Question 2 here.
 
-```{r}
+```{r echo=TRUE}
 str(syr)
 ```
-We have a bunch of int, num, chr and POSIXct
+We have a bunch of int, num, chr and one POSIXct
 
 Your answer to Q2 here.
  
@@ -41,7 +43,7 @@ Your answer to Q2 here.
 
 Question 3 here.
 
-```{r}
+```{r echo=TRUE}
 nyc_flights <- syr |>
   filter(arr_delay > 300, dest %in% c("JFK", "LGA", "EWR"))
 print(nyc_flights)
@@ -56,7 +58,7 @@ Your answer to Q3 here.
 
 Question 4 here.
 
-```{r}
+```{r echo=TRUE}
 syr <- syr |>
   mutate(distance_km1 = distance * 1.61)
 syr$distance_km2 <- syr$distance * 1.61
