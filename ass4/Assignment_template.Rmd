@@ -1,0 +1,125 @@
+---
+title: "ECON 3880: Assignment 4"
+author: "Iman Ullah and Kunwar Nir" 
+
+date: '`r Sys.Date()`'
+output: 
+  html_notebook: 
+    toc: yes
+    toc_float: yes
+    df_print: paged
+    number_sections: true
+---
+Assignment 4. 
+
+```{r echo=TRUE}
+install.packages("Ecdat")
+df22 <- readRDS("flights2022.rds")
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+head(df22)
+```
+
+
+# Q1:
+
+Question 1 goes here.
+
+```{r echo=TRUE}
+cancelled_flights <- df22 %>%
+  group_by(month) %>%
+  summarize(
+    Total = n(),
+    Cancelled = sum(is.na(air_time)),
+    PercentageCancelled = Cancelled / Total * 100
+  )
+
+print(cancelled_flights)
+```
+
+```{r echo=TRUE}
+ggplot(cancelled_flights, aes(x = month, y = PercentageCancelled, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Proportion of Cancelled Flights Each Month",
+       y = "Proportion Cancelled (%)",
+       x = "Month") +
+  theme(legend.position = "none")  # Remove the legend
+```
+
+
+# Q2:
+
+Question 2 here.
+
+```{r echo=TRUE}
+dest_flights <- df22[df22$dest %in% c("MYR", "OAK", "SNA", "PDX"), ]
+flight_counts <- table(dest_flights$origin, dest_flights$dest)
+print(flight_counts)
+```
+ 
+# Q3:
+
+Question 3 here.
+
+```{r echo=TRUE}
+missing_counts_list <- list()
+
+# Loop through each column to calculate missing values
+for (col_name in names(df22)) {
+  filtered_data <- df22 |> 
+    filter(is.na(.data[[col_name]]))
+  missing_count <- nrow(filtered_data)
+  result <- data.frame(Column = col_name, Missing_Count = missing_count)
+  missing_counts_list[[col_name]] <- result
+}
+
+missing_counts_df <- bind_rows(missing_counts_list)
+
+# Print the result
+print(missing_counts_df)
+
+```
+
+
+# Q4:
+
+Question 4 here.
+
+```{r echo=TRUE}
+processed_df <- df22 %>%
+  filter(dest != "EGE") %>%
+  select(origin, dest, distance) %>%
+  filter(!is.na(origin) & !is.na(dest) & !is.na(distance)) %>%
+  distinct() %>%
+  pivot_wider(names_from = origin, values_from = distance, values_fill = list(distance = NA))
+
+top_10_rows <- head(processed_df, 10)
+# Print the top 10 rows
+print(top_10_rows)
+```
+
+Your answer to Q4 here.
+
+
+# Q5:
+
+Question 5 here.
+
+```{r echo=TRUE}
+library(Ecdat)
+
+data("Money", package = "Ecdat")
+can_money <- as.data.frame(Money)
+can_money <- can_money %>%
+  mutate(my = m * y)
+
+head(can_money, 2)
+```
+
+
+***Good luck!***
+
+
+
