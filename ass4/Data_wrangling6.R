@@ -1,4 +1,4 @@
-# Data Wrangling 
+How many missing observations do we have in each column of the df22 (note that we need the number of missing in every single column!)? Write code to count the missing observations and show them in the notebook.# Data Wrangling 
 # ECON 3880 
 # May 21 2024
 
@@ -431,7 +431,6 @@ diamond |> group_by(cut) |>
 
 # let's copy diamonds data into excel. How?
 # here we will copy and paste 
-
 diamond |> clipr::write_clip()
 
 # https://rforpoliticalscience.com/2023/01/15/cleaning-up-messy-world-bank-data/
