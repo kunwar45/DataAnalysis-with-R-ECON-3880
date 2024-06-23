@@ -1,0 +1,415 @@
+-- Create Countries Table
+CREATE TABLE countries (
+    country_id INTEGER PRIMARY KEY,
+    name VARCHAR(100) UNIQUE,
+);
+
+-- Create Competitions Table
+CREATE TABLE competitions (
+    competition_id INTEGER,
+    season_id INTEGER,
+    country_name VARCHAR(100),
+    competition_name VARCHAR(100),
+    competition_gender VARCHAR(10),
+    competition_youth BOOLEAN,
+    competition_international BOOLEAN,
+    season_name VARCHAR(20),
+    match_updated TIMESTAMP,
+    match_updated_360 TIMESTAMP,
+    match_available_360 TIMESTAMP,
+    match_available TIMESTAMP,
+    PRIMARY KEY (competition_id, season_id)
+);
+
+-- Create Stadiums Table
+CREATE TABLE stadiums (
+    stadium_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    country_id INTEGER,
+    FOREIGN KEY (country_id) REFERENCES countries(country_id)
+);
+
+-- Create Referees Table
+CREATE TABLE referees (
+    referee_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    nationality INTEGER,
+    FOREIGN KEY (nationality) REFERENCES countries(country_id)
+);
+
+-- Create Managers Table
+CREATE TABLE managers (
+    manager_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    birth_date DATE,
+    nationality INTEGER,
+    FOREIGN KEY (nationality) REFERENCES countries(country_id)
+);
+
+-- Create Teams Table
+CREATE TABLE teams (
+    team_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    country_id INTEGER,
+    FOREIGN KEY (country_id) REFERENCES countries(country_id)
+);
+
+-- Create Players Table
+CREATE TABLE players (
+    player_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    birth_date DATE,
+    gender VARCHAR(10),
+    player_nickname VARCHAR(100),
+    country_id INTEGER,
+    FOREIGN KEY (country_id) REFERENCES countries(country_id)
+);
+
+-- Create Matches Table
+CREATE TABLE matches (
+    match_id INTEGER PRIMARY KEY,
+    competition_id INTEGER,
+    season_id INTEGER,
+    match_date DATE,
+    kick_off TIME,
+    home_team_id INTEGER,
+    away_team_id INTEGER,
+    home_score INTEGER,
+    away_score INTEGER,
+    stadium_id INTEGER,
+    referee_id INTEGER,
+    home_team_manager_id INTEGER,
+    away_team_manager_id INTEGER,
+    attendance INTEGER,
+    behind_closed_doors BOOLEAN,
+    neutral_ground BOOLEAN,
+    play_status VARCHAR(20),
+    match_status VARCHAR(20),
+    match_status_360 VARCHAR(20),
+    match_week INTEGER,
+    last_updated TIMESTAMP,
+    last_updated_360 TIMESTAMP,
+    FOREIGN KEY (competition_id, season_id) REFERENCES competitions(competition_id, season_id),
+    FOREIGN KEY (stadium_id) REFERENCES stadiums(stadium_id),
+    FOREIGN KEY (referee_id) REFERENCES referees(referee_id),
+    FOREIGN KEY (home_team_id) REFERENCES teams (team_id),
+    FOREIGN KEY (away_team_id) REFERENCES teams (team_id),
+    FOREIGN KEY (home_team_manager_id) REFERENCES managers(manager_id),
+    FOREIGN KEY (away_team_manager_id) REFERENCES managers(manager_id)
+);
+
+-- Create Lineups Table
+CREATE SEQUENCE lineup_id_seq;
+
+CREATE TABLE lineups (
+    lineup_id INTEGER DEFAULT nextval('lineup_id_seq') PRIMARY KEY,
+    match_id INTEGER,
+    team_id INTEGER,
+    player_id INTEGER,
+    height FLOAT,
+    weight FLOAT,
+    jersey_number INTEGER,
+    position_id INTEGER,
+    position_name VARCHAR(20),
+    from_time TIME,
+    to_time TIME,
+    from_period INTEGER,
+    to_period INTEGER,
+    start_reason VARCHAR(50),
+    end_reason VARCHAR(50),
+    FOREIGN KEY (match_id) REFERENCES matches(match_id),
+    FOREIGN KEY (team_id) REFERENCES teams(team_id),
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+);
+
+
+
+-- Create Events Table
+CREATE TABLE events (
+    event_id UUID PRIMARY KEY,
+    match_id INTEGER,
+    team_id INTEGER,
+    player_id INTEGER,
+    period INTEGER,
+    timestamp TIME,
+    type_id INTEGER,
+    type_name VARCHAR(50),
+    outcome VARCHAR(50),
+    duration DECIMAL,
+    minute INTEGER,
+    second INTEGER,
+    possession INTEGER,
+    possession_team_id INTEGER,
+    play_pattern_id INTEGER,
+    play_pattern_name VARCHAR(50),
+    under_pressure BOOLEAN,
+    off_camera BOOLEAN,
+    out BOOLEAN,
+    related_events UUID[],
+    obv_for_after DECIMAL,
+    obv_for_before DECIMAL,
+    obv_for_net DECIMAL,
+    obv_against_after DECIMAL,
+    obv_against_before DECIMAL,
+    obv_against_net DECIMAL,
+    obv_total_net DECIMAL,
+    location_x FLOAT,
+    location_y FLOAT,
+    FOREIGN KEY (match_id) REFERENCES matches(match_id),
+    FOREIGN KEY (team_id) REFERENCES teams(team_id),
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+);
+
+-- Create Specialized Events Tables
+
+-- FiftyFifty Table
+CREATE TABLE fiftyfifty (
+    event_id UUID PRIMARY KEY,
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    counterpress BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- BadBehaviour Table
+CREATE TABLE bad_behaviour (
+    event_id UUID PRIMARY KEY,
+    card_id INTEGER,
+    card_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- BallReceipt Table
+CREATE TABLE ball_receipt (
+    event_id UUID PRIMARY KEY,
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Ball Recovery Table
+CREATE TABLE ball_recovery (
+    event_id UUID PRIMARY KEY,
+    offensive BOOLEAN,
+    recovery_failure BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Block Table
+CREATE TABLE block (
+    event_id UUID PRIMARY KEY,
+    deflection BOOLEAN,
+    offensive BOOLEAN,
+    save_block BOOLEAN,
+    counterpress BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Carry Table
+CREATE TABLE carry (
+    event_id UUID PRIMARY KEY,
+    end_location_x FLOAT,
+    end_location_y FLOAT,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Clearance Table
+CREATE TABLE clearance (
+    event_id UUID PRIMARY KEY,
+    aerial_won BOOLEAN,
+    body_part_id INTEGER,
+    body_part_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Dribble Table
+CREATE TABLE dribble (
+    event_id UUID PRIMARY KEY,
+    overrun BOOLEAN,
+    nutmeg BOOLEAN,
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    no_touch BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Dribbled Past Table
+CREATE TABLE dribbled_past (
+    event_id UUID PRIMARY KEY,
+    counterpress BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Duel Table
+CREATE TABLE duel (
+    event_id UUID PRIMARY KEY,
+    counterpress BOOLEAN,
+    duel_type_id INTEGER,
+    duel_type_name VARCHAR(50),
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Foul Committed Table
+CREATE TABLE foul_committed (
+    event_id UUID PRIMARY KEY,
+    counterpress BOOLEAN,
+    offensive BOOLEAN,
+    foul_type_id INTEGER,
+    foul_type_name VARCHAR(50),
+    advantage BOOLEAN,
+    penalty BOOLEAN,
+    card_id INTEGER,
+    card_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Foul Won Table
+CREATE TABLE foul_won (
+    event_id UUID PRIMARY KEY,
+    defensive BOOLEAN,
+    advantage BOOLEAN,
+    penalty BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Goalkeeper Table
+CREATE TABLE goalkeeper (
+    event_id UUID PRIMARY KEY,
+    position_id INTEGER,
+    position_name VARCHAR(50),
+    technique_id INTEGER,
+    technique_name VARCHAR(50),
+    body_part_id INTEGER,
+    body_part_name VARCHAR(50),
+    type_id INTEGER,
+    type_name VARCHAR(50),
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Injury Stoppage Table
+CREATE TABLE injury_stoppage (
+    event_id UUID PRIMARY KEY,
+    in_chain BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Interception Table
+CREATE TABLE interception (
+    event_id UUID PRIMARY KEY,
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Miscontrol Table
+CREATE TABLE miscontrol (
+    event_id UUID PRIMARY KEY,
+    aerial_won BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Pass Table
+CREATE TABLE pass (
+    event_id UUID PRIMARY KEY,
+    recipient_id INTEGER,
+    recipient_name VARCHAR(100),
+    length DECIMAL,
+    angle DECIMAL,
+    aerial_won BOOLEAN,
+    height_id INTEGER,
+    height_name VARCHAR(50),
+    end_location_x FLOAT,
+    end_location_y FLOAT,
+    assisted_shot_id UUID, -- This will be updated programmatically
+    backheel BOOLEAN,
+    deflected BOOLEAN,
+    miscommunication BOOLEAN,
+    cross_pass BOOLEAN,
+    cut_back BOOLEAN,
+    switch BOOLEAN,
+    shot_assist BOOLEAN,
+    goal_assist BOOLEAN,
+    body_part_id INTEGER,
+    body_part_name VARCHAR(50),
+    pass_type_id INTEGER,
+    pass_type_name VARCHAR(50),
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    technique_id INTEGER,
+    technique_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id),
+    FOREIGN KEY (recipient_id) REFERENCES players(player_id)
+);
+
+-- Player Off Table
+CREATE TABLE player_off (
+    event_id UUID PRIMARY KEY,
+    permanent BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Pressure Table
+CREATE TABLE pressure (
+    event_id UUID PRIMARY KEY,
+    counterpress BOOLEAN,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Shot Table
+CREATE TABLE shot (
+    event_id UUID PRIMARY KEY,
+    key_pass_id UUID, -- This will be updated programmatically
+    end_location_x FLOAT,
+    end_location_y FLOAT,
+    end_location_z FLOAT,
+    aerial_won BOOLEAN,
+    follows_dribble BOOLEAN,
+    first_time BOOLEAN,
+    freeze_frame JSON,
+    open_goal BOOLEAN,
+    one_on_one BOOLEAN,
+    statsbomb_xg NUMERIC,
+    deflected BOOLEAN,
+    technique_id INTEGER,
+    technique_name VARCHAR(50),
+    body_part_id INTEGER,
+    body_part_name VARCHAR(50),
+    shot_type_id INTEGER,
+    shot_type_name VARCHAR(50),
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+-- Substitution Table
+CREATE TABLE substitution (
+    event_id UUID PRIMARY KEY,
+    replacement_id INTEGER,
+    replacement_name VARCHAR(100),
+    outcome_id INTEGER,
+    outcome_name VARCHAR(50),
+    FOREIGN KEY (event_id) REFERENCES events(event_id),
+    FOREIGN KEY (replacement_id) REFERENCES players(player_id)
+);
+
+-- Dispossessed Table
+CREATE TABLE dispossessed (
+    event_id UUID PRIMARY KEY,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Offside Table
+CREATE TABLE offside (
+    event_id UUID PRIMARY KEY,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
+-- Own Goal Against Table
+CREATE TABLE own_goal_against (
+    event_id UUID PRIMARY KEY,
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
+);
+
